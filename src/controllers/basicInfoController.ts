@@ -63,10 +63,11 @@ class BasicInfoController extends BaseController {
         },
         { where: { group_id: id } }
       );
-      const cookingData: any = await req.body.permission_data.map(
+      let cookingData: any = await req.body.permission_data.map(
         async (ele: any) => {
-         return  await permissionServices.updatePermission(
-            {   group_id: id,
+          return await permissionServices.updatePermission(
+            {
+              group_id: id,
               sub_module_id: ele.sub_module_id,
               is_all: ele.is_all,
               is_create: ele.is_create,
@@ -74,27 +75,22 @@ class BasicInfoController extends BaseController {
               is_update: ele.is_update,
               is_delete: ele.is_delete,
               is_download_print: ele.is_download_print,
-              is_view_notes: ele.is_view_notes },
+              is_view_notes: ele.is_view_notes,
+            },
             {
               where: {
                 [Op.and]: [
-                  { sub_module_id: ele.sub_module_id},
-                  { id: ele.id  },
+                  { sub_module_id: ele.sub_module_id },
+                  { id: ele.id },
                   { group_id: id },
                 ],
               },
             }
           );
-          
         }
       );
-      // const collectionData = await Promise.all(cookingData);
-      // const sub_mod_id = await collectionData.map(
-      //   (val: any) => val.sub_module_id
-      // );
-      // const sub_id = await req.body.permission_data.map((val: any) => val.id);
 
-    
+      cookingData = await Promise.all(cookingData);
       return this.success(
         req,
         res,
