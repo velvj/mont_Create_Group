@@ -65,42 +65,41 @@ class BasicInfoController extends BaseController {
       );
       const cookingData: any = await req.body.permission_data.map(
         async (ele: any) => {
-          return {
-            group_id: id,
-            sub_module_id: ele.sub_module_id,
-            is_all: ele.is_all,
-            is_create: ele.is_create,
-            is_view: ele.is_view,
-            is_update: ele.is_update,
-            is_delete: ele.is_delete,
-            is_download_print: ele.is_download_print,
-            is_view_notes: ele.is_view_notes,
-          };
+         return  await permissionServices.updatePermission(
+            {   group_id: id,
+              sub_module_id: ele.sub_module_id,
+              is_all: ele.is_all,
+              is_create: ele.is_create,
+              is_view: ele.is_view,
+              is_update: ele.is_update,
+              is_delete: ele.is_delete,
+              is_download_print: ele.is_download_print,
+              is_view_notes: ele.is_view_notes },
+            {
+              where: {
+                [Op.and]: [
+                  { sub_module_id: ele.sub_module_id},
+                  { id: ele.id  },
+                  { group_id: id },
+                ],
+              },
+            }
+          );
+          
         }
       );
-      const collectionData = await Promise.all(cookingData);
-      const sub_mod_id = await collectionData.map(
-        (val: any) => val.sub_module_id
-      );
-      const sub_id = await req.body.permission_data.map((val: any) => val.id);
+      // const collectionData = await Promise.all(cookingData);
+      // const sub_mod_id = await collectionData.map(
+      //   (val: any) => val.sub_module_id
+      // );
+      // const sub_id = await req.body.permission_data.map((val: any) => val.id);
 
-      let productList = await permissionServices.updatePermission(
-        { ...collectionData[0] },
-        {
-          where: {
-            [Op.and]: [
-              { sub_module_id: { [Op.in]: sub_mod_id } },
-              { id: { [Op.in]: sub_id } },
-              { group_id: id },
-            ],
-          },
-        }
-      );
+    
       return this.success(
         req,
         res,
         this.status.HTTP_OK,
-        productList,
+        cookingData,
         "Group Updated successfully"
       );
     } catch (e) {

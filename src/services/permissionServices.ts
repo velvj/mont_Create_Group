@@ -16,7 +16,7 @@ class PermissionServices {
   //update permission
   async updatePermission(payload: any, id: any) {
     try {
-      let result: any = await Permission.update(payload, id);
+      let result: any = await Permission.update({...payload}, id);
       console.log("update result>>",result)
       return result;
     } catch (e) {
